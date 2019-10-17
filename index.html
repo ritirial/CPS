@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset = "UTF-8">
+
+      <title>Aplicación</title>
+
+      <link rel = "stylesheet" href = "./bower_components/bootstrap/dist/css/bootstrap.min.css" />
+      <link rel = "stylesheet" href = "./styles.css" />
+   </head>
+   
+   <body>
+      <div class="main__header">
+         <ol id="addressLinks" class="breadcrumb">
+         </ol>
+      </div>
+      <div id="directory_items" class="main__content">
+         <!--<div class="list__item">
+            <img src="folder.png" class="item__picture">
+            <p class="item__name">5119</p>
+         </div>-->
+         <!--<div class="list__item">
+            <img src="image.png" class="item__picture">
+            <input type="checkbox" class="item__checkbox" checked disabled>
+            <p class="item__name">name</p>
+         </div>-->
+         <!--<div class="footer__checkbox">
+            <input id="sample" type="checkbox" checked disabled>
+            <label for="sample">Sample photos</label>
+         </div>-->
+      </div>         
+
+      <div class = "main__footer">
+         <div class="footer__content">
+            <div class="footer__options">
+               <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#exampleModal">Guardar imágenes</button>
+            </div>
+            <!--<div class="footer__address">
+               IP Address
+            </div>-->
+         </div>
+      </div>
+
+      <div id="exampleModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Agregar imágenes</h5>
+            </div>
+            <div class="modal-body">
+               <label for="importSample">Nombre de la carpeta para las imágenes</label>
+               <div class="input-group">
+                 <div class="input-group-prepend">
+                   <span class="input-group-text" id="importDate"></span>
+                 </div>
+                 <input type="text" placeholder="Sample number" class="form-control" id="importSample">
+               </div>
+
+               <br>
+
+               <label>Copiar imágenes en las carpetas</label>
+               <div class="custom-control custom-checkbox">
+                 <input type="checkbox" class="custom-control-input" id="checkEL">
+                 <label class="custom-control-label" for="checkEL">EL</label>
+               </div>
+               <div class="custom-control custom-checkbox">
+                 <input type="checkbox" class="custom-control-input" id="checkHBHF">
+                 <label class="custom-control-label" for="checkHBHF">HBHF</label>
+               </div>
+               <div class="custom-control custom-checkbox">
+                 <input type="checkbox" class="custom-control-input" id="checkHL">
+                 <label class="custom-control-label" for="checkHL">HL</label>
+               </div>
+               <div class="custom-control custom-checkbox">
+                 <input type="checkbox" class="custom-control-input" id="checkSTF">
+                 <label class="custom-control-label" for="checkSTF">STF</label>
+               </div>
+               <div class="custom-control custom-checkbox">
+                 <input type="checkbox" class="custom-control-input" id="checkTY">
+                 <label class="custom-control-label" for="checkTY">TY</label>
+               </div>
+
+               <br>
+
+               <label>Seleccionar imágenes</label>
+               <button type="button" onclick="pressFiles()" class="btn btn-outline-secondary btn-block">Seleccionar</button>
+               <input type="file" class="custom-file-input hidden" id="filesInput" accept="image/*" multiple>
+
+               <table id="filesTable" class="table"></table>
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" onclick="startUpload()">Agregar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <script src = "./view.js" ></script>
+      <script type="text/javascript" charset="utf-8">
+         /*
+         document.getElementById('drag').ondragstart = (event) => {
+            event.preventDefault()
+            ipcRenderer.send('ondragstart', '/path/to/item')
+         }*/
+      </script>
+   </body>
+</html>
