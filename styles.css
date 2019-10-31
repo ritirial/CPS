@@ -124,3 +124,7 @@ body {
 #filesInput {
 	height: 0 !important;
 }
+
+.center {
+	text-align: center;
+}

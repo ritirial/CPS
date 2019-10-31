@@ -33,7 +33,7 @@
       <div class = "main__footer">
          <div class="footer__content">
             <div class="footer__options">
-               <button onclick="clearInputs()" type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#exampleModal">Guardar imágenes</button>
+               <button onclick="clearInputs()" type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#exampleModal">Upload pictures</button>
             </div>
             <!--<div class="footer__address">
                IP Address
@@ -45,10 +45,10 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Agregar imágenes</h5>
+              <h5 class="modal-title">Upload pictures</h5>
             </div>
             <div class="modal-body">
-               <label for="importSample">Nombre de la carpeta para las imágenes</label>
+               <label for="importSample">Sample number of the day</label>
                <div class="input-group">
                  <div class="input-group-prepend">
                    <span class="input-group-text" id="importDate"></span>
@@ -58,39 +58,30 @@
 
                <br>
 
-               <label>Copiar imágenes en las carpetas</label>
-               <div class="custom-control custom-checkbox">
-                 <input type="checkbox" class="custom-control-input" id="checkEL">
-                 <label class="custom-control-label" for="checkEL">EL</label>
-               </div>
-               <div class="custom-control custom-checkbox">
-                 <input type="checkbox" class="custom-control-input" id="checkHBHF">
-                 <label class="custom-control-label" for="checkHBHF">HBHF</label>
-               </div>
-               <div class="custom-control custom-checkbox">
-                 <input type="checkbox" class="custom-control-input" id="checkHL">
-                 <label class="custom-control-label" for="checkHL">HL</label>
-               </div>
-               <div class="custom-control custom-checkbox">
-                 <input type="checkbox" class="custom-control-input" id="checkSTF">
-                 <label class="custom-control-label" for="checkSTF">STF</label>
-               </div>
-               <div class="custom-control custom-checkbox">
-                 <input type="checkbox" class="custom-control-input" id="checkTY">
-                 <label class="custom-control-label" for="checkTY">TY</label>
+               <label>Business line</label>
+               <div class="input-group">
+                <select class="form-control" id="importLine">
+                  <option value="EL">EL</option>
+                  <option value="HBHF">HBHF</option>
+                  <option value="HL">HL</option>
+                  <option value="STF">STF</option>
+                  <option value="TY">TY</option>
+                </select>
                </div>
 
                <br>
 
-               <label>Seleccionar imágenes</label>
-               <button type="button" onclick="pressFiles()" class="btn btn-outline-secondary btn-block">Seleccionar</button>
+               <label>Select pictures</label>
+               <button id="filesButton" type="button" onclick="pressFiles()" class="btn btn-outline-secondary btn-block">Select</button>
                <input type="file" class="custom-file-input hidden" id="filesInput" accept="image/*" multiple>
 
-               <table id="filesTable" class="table"></table>
+               <table id="filesTable" class="table">
+                 
+               </table>
 
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" onclick="startUpload()">Agregar</button>
+              <button type="button" class="btn btn-secondary" onclick="startUploadAction()">Upload</button>
             </div>
           </div>
         </div>
