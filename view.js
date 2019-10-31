@@ -2,10 +2,12 @@ let $ = require('jquery')
 let fs = require('fs')
 require('bootstrap')
 
+var mainPath = './reposit';
 var currPath = './reposit';
 
 if (fs.existsSync('R:/CPS/BUFFALO/IMAGES')) {
   console.log('has requested path');
+  mainPath = 'R:/CPS/BUFFALO/IMAGES';
   currPath = 'R:/CPS/BUFFALO/IMAGES';
 } else {
   console.log('using local path');
@@ -129,8 +131,8 @@ function startUploadSubmit() {
   }
 
   //make year dir if not exists
-  if (!fs.existsSync('./reposit/'+importStringYear)) {
-    fs.mkdir('./reposit/'+importStringYear, (err) => {
+  if (!fs.existsSync(mainPath+'/'+importStringYear)) {
+    fs.mkdir(mainPath+'/'+importStringYear, (err) => {
       console.log('error',err);
     })
   }
@@ -148,33 +150,33 @@ function startUploadSubmit() {
 
     var newName = 'img'+importStringSample+count+'.'+sourceName.split('.')[1];
 
-    copyFile(inputFiles[i].path, './reposit/'+importStringYear+'/'+newName);
+    copyFile(inputFiles[i].path, mainPath+'/'+importStringYear+'/'+newName);
   }
 
   var importStringBussiness = $('#importLine').val();
 
   //make day dir in bussiness line if not exists
-  if (!fs.existsSync('./reposit/'+importStringBussiness+'/'+importStringDay)) {
-    fs.mkdir('./reposit/'+importStringBussiness+'/'+importStringDay, (err) => {
+  if (!fs.existsSync(mainPath+'/'+importStringBussiness+'/'+importStringDay)) {
+    fs.mkdir(mainPath+'/'+importStringBussiness+'/'+importStringDay, (err) => {
       console.log('error',err);
     })
   }  
 
   //make sample dir if not exists
-  if (!fs.existsSync('./reposit/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample)) {
-    fs.mkdir('./reposit/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample, (err) => {
+  if (!fs.existsSync(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample)) {
+    fs.mkdir(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample, (err) => {
       console.log('error',err);
     });
   }
 
   //make photos dir if not exists
-  if (!fs.existsSync('./reposit/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo')) {
-    fs.mkdir('./reposit/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo', (err) => {
+  if (!fs.existsSync(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo')) {
+    fs.mkdir(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo', (err) => {
       console.log('error',err);
     });
   }
-  if (!fs.existsSync('./reposit/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo')) {
-    fs.mkdir('./reposit/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo', (err) => {
+  if (!fs.existsSync(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo')) {
+    fs.mkdir(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo', (err) => {
       console.log('error',err);
     });
   }
@@ -188,10 +190,10 @@ function startUploadSubmit() {
 
     if (i == 0) {
       var newName = 'img'+importStringSample+count+'.'+sourceName.split('.')[1];
-      copyFile(inputFiles[i].path, './reposit/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo/'+newName);
+      copyFile(inputFiles[i].path, mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo/'+newName);
     } else {
       var newName = 'img'+importStringSample+count+'_Labeling.'+sourceName.split('.')[1];
-      copyFile(inputFiles[i].path, './reposit/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo/'+newName);
+      copyFile(inputFiles[i].path, mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo/'+newName);
     }
   }
 
