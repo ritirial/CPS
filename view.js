@@ -4,6 +4,9 @@ require('bootstrap')
 
 currPath = './reposit'
 
+importStringYear = ''
+importStringDay = ''
+
 function readPath() {
   console.log(currPath)
   fs.readdir(currPath, (err, dir) => {
@@ -72,6 +75,7 @@ function setLinks() {
 function setUpload(place) {
   importString = ''
 
+  //location
   if (place == 'Buffalo') {
     importString = '51'
   }
@@ -79,7 +83,9 @@ function setUpload(place) {
   now = new Date()
   start = new Date(now.getFullYear(), 0, 0)
 
+  //year
   importString = importString + now.getFullYear().toString().substring(2)
+  importStringYear = importString
 
   diff = (now - start) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000)
   oneDay = 1000 * 60 * 60 * 24
@@ -91,23 +97,74 @@ function setUpload(place) {
     day = '0' + day
   }
 
+  //day
   importString = importString + day
+  importStringDay = importString
 
-  console.log(importString)
   $('#importDate').html(importString)
 }
 
+//submit file to new directories
 function startUpload() {
+  //get files
+  inputFiles = $('#filesInput')[0].files
+
+  //make year dir if not exists
+  if (!fs.existsSync('./reposit/'+importStringYear)) {
+    fs.mkdir('./reposit/'+importStringYear)
+  }
+
+  //make day dir if not exists
+  if (!fs.existsSync('./reposit/'+importStringYear+'/'+importStringDay)) {
+    fs.mkdir('./reposit/'+importStringYear+'/'+importStringDay)
+  }
+
+  var importStringSample = importStringDay + $('#importSample').val()
+
+  //make sample dir if not exists
+  if (!fs.existsSync('./reposit/'+importStringYear+'/'+importStringDay+'/'+importStringSample)) {
+    fs.mkdir('./reposit/'+importStringYear+'/'+importStringDay+'/'+importStringSample)
+  }
+
+  for (i = 0; i < inputFiles.length; i++) {
+    sourceName = inputFiles[0].name
+
+    var count = "00" + Number(i+1);
+    count = count.substr(count.length-3);
+
+    newName = 'img'+importStringSample+count+'_Labeling.'+sourceName.split('.')[1]
+
+    copyFile(inputFiles[i].path, './reposit/'+importStringYear+'/'+importStringDay+'/'+importStringSample+'/'+newName)
+  }
+
   $('#exampleModal').modal('hide')
+  $('#filesInput').val('')
 }
 
+//remote call the input
 function pressFiles() {
   $('#filesInput').trigger('click')
 }
 
+//show selected files in a list
 $('#filesInput').change(function() {
-    console.log(this.files);
+
 });
+
+function copyFile(source, target) {
+  var rd = fs.createReadStream(source);
+  var wr = fs.createWriteStream(target);
+  return new Promise(function(resolve, reject) {
+    rd.on('error', reject);
+    wr.on('error', reject);
+    wr.on('finish', resolve);
+    rd.pipe(wr);
+  }).catch(function(error) {
+    rd.destroy();
+    wr.end();
+    throw error;
+  });
+}
 
 readPath()
 
