@@ -108,7 +108,7 @@ function setUpload(place) {
 }
 
 function startUploadAction() {
-  
+  startUploadSubmit();
 }
 
 //submit file to new directories
