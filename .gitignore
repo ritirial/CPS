@@ -1,5 +1,8 @@
-bower_components/
-node_modules/
+#directories
+bower_components
+node_modules
+dist
 
-bur-darwin-x64/
-CPS-win32-x64/
+#files
+*.tgz
+*.log
