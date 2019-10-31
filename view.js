@@ -146,7 +146,19 @@ function pressFiles() {
   $('#filesInput').trigger('click')
 }
 
+<<<<<<< HEAD
 //show selected files in a list
+=======
+function clearInputs() {
+  $('#importSample').val('')
+  $('#checkEL').prop('checked', false).parent().removeClass('active');
+  $('#checkHBHF').prop('checked', false).parent().removeClass('active');
+  $('#checkHL').prop('checked', false).parent().removeClass('active');
+  $('#checkSTF').prop('checked', false).parent().removeClass('active');
+  $('#checkTY').prop('checked', false).parent().removeClass('active');
+}
+
+>>>>>>> db8c7dfaf6c87aa96f94f1c76036390f9b9f142a
 $('#filesInput').change(function() {
 
 });
