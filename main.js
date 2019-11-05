@@ -2,8 +2,6 @@ const {app, BrowserWindow} = require('electron')
 const url = require('url') 
 const path = require('path')
 
-const { ipcMain } = require('electron')
-
 let win  
 
 function createWindow() { 
@@ -16,12 +14,5 @@ function createWindow() {
       slashes: true 
    })) 
 }  
-
-ipcMain.on('ondragstart', (event, filePath) => {
-  event.sender.startDrag({
-    file: filePath,
-    icon: '/path/to/icon.png'
-  })
-})
 
 app.on('ready', createWindow)

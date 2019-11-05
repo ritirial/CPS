@@ -3,7 +3,7 @@
    <head>
       <meta charset = "UTF-8">
 
-      <title>Aplicación</title>
+      <title>Application</title>
 
       <link rel = "stylesheet" href = "./bower_components/bootstrap/dist/css/bootstrap.min.css" />
       <link rel = "stylesheet" href = "./styles.css" />
@@ -11,26 +11,16 @@
    
    <body>
       <div class="main__header">
-         <ol id="addressLinks" class="breadcrumb">
-         </ol>
+        <p class="header__text font-weight-bold">Path:</p>
+        <ol id="addressLinks" class="breadcrumb">
+        </ol>
+        <button type="button" onclick="clearRootInputs()" class="btn btn-outline-dark" data-toggle="modal" data-target="#pathConfirmModal">Change root</button>
       </div>
       <div id="directory_items" class="main__content">
-         <!--<div class="list__item">
-            <img src="folder.png" class="item__picture">
-            <p class="item__name">5119</p>
-         </div>-->
-         <!--<div class="list__item">
-            <img src="image.png" class="item__picture">
-            <input type="checkbox" class="item__checkbox" checked disabled>
-            <p class="item__name">name</p>
-         </div>-->
-         <!--<div class="footer__checkbox">
-            <input id="sample" type="checkbox" checked disabled>
-            <label for="sample">Sample photos</label>
-         </div>-->
-      </div>         
+         
+      </div>
 
-      <div class = "main__footer">
+      <div class="main__footer">
          <div class="footer__content">
             <div class="footer__options">
                <button onclick="clearInputs()" type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#exampleModal">Upload pictures</button>
@@ -46,20 +36,26 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Upload pictures</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
             <div class="modal-body">
-               <label for="importSample">Sample number of the day</label>
-               <div class="input-group">
-                 <div class="input-group-prepend">
-                   <span class="input-group-text" id="importDate"></span>
-                 </div>
-                 <input type="text" placeholder="Sample number" class="form-control" id="importSample">
-               </div>
+              <label>Sample number of the day</label>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <input type="number" placeholder="Day folder" class="form-control" id="importDate">
+                </div>
+                <div class="form-group col-md-6">
+                  <input type="number" placeholder="Sample number" class="form-control" id="importSample">
+                </div>
+              </div>
+              <p id="folderError" class="text-danger text-small"></p>
 
-               <br>
+              <br>
 
-               <label>Business line</label>
-               <div class="input-group">
+              <label>Business line</label>
+              <div class="input-group">
                 <select class="form-control" id="importLine">
                   <option value="EL">EL</option>
                   <option value="HBHF">HBHF</option>
@@ -67,21 +63,43 @@
                   <option value="STF">STF</option>
                   <option value="TY">TY</option>
                 </select>
-               </div>
+              </div>
 
-               <br>
+              <br>
 
-               <label>Select pictures</label>
-               <button id="filesButton" type="button" onclick="pressFiles()" class="btn btn-outline-secondary btn-block">Select</button>
-               <input type="file" class="custom-file-input hidden" id="filesInput" accept="image/*" multiple>
+              <label>Select pictures</label>
+              <button id="filesButton" type="button" onclick="pressFiles()" class="btn btn-outline-secondary btn-block">Select</button>
+              <input type="file" class="custom-file-input hidden" id="filesInput" accept="image/*" multiple>
 
-               <table id="filesTable" class="table">
-                 
-               </table>
+              <table id="filesTable" class="table"></table>
 
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" onclick="startUploadAction()">Upload</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="pathConfirmModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Change root directory</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Current root directory: <b id="rootPathLabel"></b></p>
+               <label>Choose the directory where the pictures will be saved:</label>
+               <button id="filesButton" type="button"  onclick="changeMainDirectory()" class="btn btn-outline-secondary btn-block">Choose...</button>
+               <input id="pathInput" type="file" class="hidden" webkitdirectory>
+               <p><small class="text-danger">Business line folders (EL, HBHF, ...) and the current year lab folder (e.g. 51XX) will be generated if they are not present on the selected directory</small></p>
+               <p id="newRootPathLabel"></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" onclick="confirmNewRoot()">Confirm new root directory</button>
             </div>
           </div>
         </div>

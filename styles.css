@@ -121,10 +121,27 @@ body {
 	bottom: 20px;
 }
 
+.header__text {
+	margin-right: 0.5rem;
+	margin-bottom: 0;
+}
+
+.main__header .btn {
+	margin-left: 0.5rem;
+}
+
+.header__text, .btn {
+	flex-shrink: 0;
+}
+
 #filesInput {
 	height: 0 !important;
 }
 
 .center {
 	text-align: center;
+}
+
+.hidden {
+	display: none;
 }
