@@ -6,6 +6,7 @@ window.Bootstrap = require('bootstrap');
 let fs = require('fs');
 const os = require('os');
 const storage = require('electron-json-storage');
+const { dialog } = require('electron').remote
 
 //require('bootstrap')
 
@@ -13,44 +14,48 @@ const storage = require('electron-json-storage');
 var mainPath = '.';
 var currPath = '.';
 
+var newRootPath = "";
+
 var importStringYear = '';
 var importStringDay = '';
 
 var uploadFiles = [];
 
-function getRoot() {
-  //initialize file input change detection
-  $('#pathInput').change(function() {
-    var filePath = $('#pathInput')[0].files[0].path;
-    $('#newRootPathLabel').html('New root directory: <b>'+filePath+'</b>');
-  });
+//initialize file input change detection
+$('#pathInput').change(function() {
+  filePath = $('#pathInput')[0].files[0].path;
+  console.log('selected root', filePath);
+  $('#newRootPathLabel').html('New root directory: <b>'+filePath+'</b>');
+});
 
-  //initialize file input change detection
-  $('#filesInput').change(function() {
-    var tableString = '';
+//initialize file input change detection
+$('#filesInput').change(function() {
+  var tableString = '';
 
-    var inputFiles = $('#filesInput')[0].files;
+  var inputFiles = $('#filesInput')[0].files;
 
-    if (inputFiles.length > 0) {
-      tableString = '<thead><tr><td class="center">Selected file</td><td class="center">Sample</td></tr></thead><tbody>';
-    
-      for(i = 0; i < inputFiles.length; i++) {
-        tableString += '<tr><td>'+inputFiles[i].name+'</td><td class="center"><div class="form-check-inline"><label class="form-check-label"><input type="radio" class="form-check-input" name="sampleRadio" value="'+i+'"></label></div></td></tr>';
-      }
-
-      tableString += '</tbody>';
+  if (inputFiles.length > 0) {
+    tableString = '<thead><tr><td class="center">Selected file</td><td class="center">Sample</td></tr></thead><tbody>';
+  
+    for(i = 0; i < inputFiles.length; i++) {
+      tableString += '<tr><td>'+inputFiles[i].name+'</td><td class="center"><div class="form-check-inline"><label class="form-check-label"><input type="radio" class="form-check-input" name="sampleRadio" value="'+i+'"></label></div></td></tr>';
     }
-      
-    $('#filesTable').html(tableString);
-  });
 
-  $('#importLab').change(function() {
-    var newLab = $('#importLab').val();
-    storage.set('storeLab', {lab: newLab}, (error) => {
-    });
-    setUploadFolder();
-  });
+    tableString += '</tbody>';
+  }
+    
+  $('#filesTable').html(tableString);
+});
 
+$('#importLab').change(function() {
+  var newLab = $('#importLab').val();
+  storage.set('storeLab', {lab: newLab}, (error) => {
+  });
+  setUploadFolder();
+});
+
+
+function getRoot() {
   /*
   storage.clear(function(error) {
     if (error) throw error;
@@ -464,11 +469,18 @@ function clearInputs() {
 function clearRootInputs() {
   $('#rootPathLabel').html(mainPath);
   $('#filesInput').val('');
+  newRootPath = "";
   $('#newRootPathLabel').html('');
 }
 
 function changeMainDirectory() {
-  $('#pathInput').trigger('click');  
+  newRootPath = dialog.showOpenDialogSync({
+    properties: ['openDirectory']
+  });
+  console.log('new path', newRootPath);
+  $('#newRootPathLabel').html('New root directory: <b>'+newRootPath+'</b>');
+
+  //$('#pathInput').trigger('click');  
 }
 
 //remote call the input
@@ -477,8 +489,9 @@ function pressFiles() {
 }
 
 function confirmNewRoot() {
-  if ($('#pathInput')[0].files.length > 0) {
-    var filePath = $('#pathInput')[0].files[0].path;
+  console.log('changing root', newRootPath);
+  if (newRootPath != "") {
+    var filePath = newRootPath;
 
     //make bussiness lines folders
     if (!fs.existsSync(filePath+'/EL')) {
@@ -562,7 +575,4 @@ function copyFile(source, target) {
   });
 }
 
-$(document).ready(function(){
-  //initial call to root directory
-  getRoot();  
-});
+getRoot();  
