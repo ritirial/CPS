@@ -8,6 +8,7 @@ const fs = require('fs-extra');
 const os = require('os');
 const storage = require('electron-json-storage');
 const { dialog } = require('electron').remote
+const trash = require('trash');
 
 //require('bootstrap')
 
@@ -42,12 +43,11 @@ $('html').keyup(function(e) {
   if (e.keyCode == 46) {
     if (focusedPath != '') {
       console.log('remove focused path', focusedPath);
-      fs.remove(focusedPath, err => {
-        if (err) return console.error(err)
-
+      (async () => {
+        await trash(focusedPath);
         console.log('success');
         readPath();
-      })
+      })();
     }
   }
 });
