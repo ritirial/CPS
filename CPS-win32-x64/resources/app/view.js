@@ -3,7 +3,8 @@ window.Bootstrap = require('bootstrap');
 
 //let $ = require('jquery')
 
-let fs = require('fs');
+//let fs = require('fs');
+const fs = require('fs-extra');
 const os = require('os');
 const storage = require('electron-json-storage');
 const { dialog } = require('electron').remote
@@ -20,6 +21,36 @@ var importStringYear = '';
 var importStringDay = '';
 
 var uploadFiles = [];
+var focusedPath = "";
+
+$('html').on('click', function(event) { 
+  target = $(event.target);
+  var closest = target.closest('.list__item');
+  if (closest.length) {
+    var itemPath = $(closest).data('path');
+    if (itemPath) {
+      focusPath(closest[0], itemPath);
+    }
+  } else {
+    $('.list__item').removeClass('item__focused');
+    focusedPath = '';
+  }
+  console.log('focused path', focusedPath);
+});
+
+$('html').keyup(function(e) {
+  if (e.keyCode == 46) {
+    if (focusedPath != '') {
+      console.log('remove focused path', focusedPath);
+      fs.remove(focusedPath, err => {
+        if (err) return console.error(err)
+
+        console.log('success');
+        readPath();
+      })
+    }
+  }
+});
 
 //initialize file input change detection
 $('#pathInput').change(function() {
@@ -144,24 +175,33 @@ function getRoot() {
 }
 
 function readPath() {
+  focusedPath = '';
   var fullPath = mainPath+'/'+currPath;
   console.log('fullPath', fullPath);
   var dir = fs.readdirSync(fullPath);
   $('#directory_items').html('');
   for (i = 0; i < dir.length; i++) {
     let path = dir[i];
+
     if (path != '.DS_Store') {
+      var selectAction = ''
+      if (currPath != '.') {
+        var toFousPath = fullPath + '/' + path;
+        toFousPath = toFousPath.replace(/\\/g,'/');
+        selectAction = 'data-path="'+toFousPath+'"';
+      }
+
       let itemString = '';
       if (path.includes('.png') || path.includes('.jpg')) {
         filePicture = fullPath + '/' + path;
         itemString =
-          '<div class="list__item">'+
+          '<div '+selectAction+' class="list__item">'+
             '<img src="'+filePicture+'" class="item__picture">'+
             '<p class="item__name">'+path+'</p>'+
           '</div>';
       } else {
         itemString =
-          '<div onclick="goPath(\''+path+'\')" class="list__item folder">'+
+          '<div '+selectAction+' ondblclick="goPath(\''+path+'\')" class="list__item">'+
             '<img src="folder.png" class="item__picture">'+
             '<p class="item__name">'+path+'</p>'+
           '</div>';
@@ -170,10 +210,30 @@ function readPath() {
     }
   }
   setLinks();
+  console.log('focused path', focusedPath);
+}
+
+function focusPath(focusedElement, newFocusedPath) {
+  var items = $('.list__item');
+  for (i = 0; i < items.length; i++) {
+    if (items[i] == focusedElement) {
+      if (!$(focusedElement).hasClass('item__focused')) {
+        $(focusedElement).addClass('item__focused');
+      }
+    } else {
+      $(items[i]).removeClass('item__focused');
+    }
+  }
+  if ($('.item__focused').length > 0) {
+    focusedPath = newFocusedPath;
+  } else {
+    focusedPath = '';
+  }
 }
 
 //called on breadcrumbs link click
 function goPathFromLink(newPath) {
+  focusedPath = '';
   currPath = newPath;
   readPath();
 }

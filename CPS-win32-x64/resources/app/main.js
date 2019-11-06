@@ -11,11 +11,15 @@ function createWindow () {
   mainWindow = new BrowserWindow({
     width: 1024,
     height: 640,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true
     }
   })
+
+  mainWindow.removeMenu()
+  mainWindow.setMenuBarVisibility(false)
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')

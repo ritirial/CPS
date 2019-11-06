@@ -40,6 +40,7 @@ body {
 	justify-content: flex-start;
 	height: calc(100% - 188px);
 	overflow-y: scroll;
+	padding: 12px;
 }
 
 .list__item {
@@ -50,7 +51,7 @@ body {
 	margin: 12px;
 }
 
-.folder:hover > * {
+.list__item:hover > * {
 	cursor: pointer;
 	text-decoration: underline;
 }
@@ -144,4 +145,8 @@ body {
 
 .hidden {
 	display: none;
+}
+
+.item__focused {
+	background-color: #4da2b4;
 }
