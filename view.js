@@ -1,11 +1,13 @@
-let $ = require('jquery');
+window.$ = window.jQuery = require('jquery'); // not sure if you need this at all
+window.Bootstrap = require('bootstrap');
+
+//let $ = require('jquery')
+
 let fs = require('fs');
-
 const os = require('os');
-
-require('bootstrap');
-
 const storage = require('electron-json-storage');
+
+//require('bootstrap')
 
 //get user defined directory
 var mainPath = '.';
@@ -17,6 +19,38 @@ var importStringDay = '';
 var uploadFiles = [];
 
 function getRoot() {
+  //initialize file input change detection
+  $('#pathInput').change(function() {
+    var filePath = $('#pathInput')[0].files[0].path;
+    $('#newRootPathLabel').html('New root directory: <b>'+filePath+'</b>');
+  });
+
+  //initialize file input change detection
+  $('#filesInput').change(function() {
+    var tableString = '';
+
+    var inputFiles = $('#filesInput')[0].files;
+
+    if (inputFiles.length > 0) {
+      tableString = '<thead><tr><td class="center">Selected file</td><td class="center">Sample</td></tr></thead><tbody>';
+    
+      for(i = 0; i < inputFiles.length; i++) {
+        tableString += '<tr><td>'+inputFiles[i].name+'</td><td class="center"><div class="form-check-inline"><label class="form-check-label"><input type="radio" class="form-check-input" name="sampleRadio" value="'+i+'"></label></div></td></tr>';
+      }
+
+      tableString += '</tbody>';
+    }
+      
+    $('#filesTable').html(tableString);
+  });
+
+  $('#importLab').change(function() {
+    var newLab = $('#importLab').val();
+    storage.set('storeLab', {lab: newLab}, (error) => {
+    });
+    setUploadFolder();
+  });
+
   /*
   storage.clear(function(error) {
     if (error) throw error;
@@ -31,7 +65,7 @@ function getRoot() {
           //make first default folder
           if (!fs.existsSync(tmpPath+'/CPS')) {
             fs.mkdir(tmpPath+'/CPS', (err) => {
-              if (error) {
+              if (err) {
                 console.log('default CPS error', err);
               }
             });
@@ -40,7 +74,7 @@ function getRoot() {
           //make second default folder
           if (!fs.existsSync(tmpPath+'/IMAGES')) {
             fs.mkdir(tmpPath+'/IMAGES', (err) => {
-              if (error) {
+              if (err) {
                 console.log('default IMAGES error', err);
               }
             });
@@ -49,35 +83,35 @@ function getRoot() {
           //make bussiness lines folders
           if (!fs.existsSync(tmpPath+'/EL')) {
             fs.mkdir(tmpPath+'/EL', (err) => {
-              if (error) {
+              if (err) {
                 console.log('default EL error', err);
               }
             });
           }
           if (!fs.existsSync(tmpPath+'/HBHF')) {
             fs.mkdir(tmpPath+'/HBHF', (err) => {
-              if (error) {
+              if (err) {
                 console.log('default HBHF error', err);
               }
             });
           }
           if (!fs.existsSync(tmpPath+'/HL')) {
             fs.mkdir(tmpPath+'/HL', (err) => {
-              if (error) {
+              if (err) {
                 console.log('default HL error', err);
               }
             });
           }
           if (!fs.existsSync(tmpPath+'/STF')) {
             fs.mkdir(tmpPath+'/STF', (err) => {
-              if (error) {
+              if (err) {
                 console.log('default STF error', err);
               }
             });
           }
           if (!fs.existsSync(tmpPath+'/TY')) {
             fs.mkdir(tmpPath+'/TY', (err) => {
-              if (error) {
+              if (err) {
                 console.log('default TY error', err);
               }
             });
@@ -89,7 +123,7 @@ function getRoot() {
           //initial call to load the main view
           readPath();
           //prepare upload form with buffalo data
-          setUpload('Buffalo');
+          setUpload();
         });
       });
     } else {
@@ -99,7 +133,7 @@ function getRoot() {
       //initial call to load the main view
       readPath();
       //prepare upload form with buffalo data
-      setUpload('Buffalo');
+      setUpload();
     }
   });
 }
@@ -175,13 +209,29 @@ function setLinks() {
   }
 }
 
-function setUpload(place) {
+function setUpload() {
+  storage.get('storeLab', (error, data) => {
+    if (!data.lab) {
+      storage.set('storeLab', {lab: '51'}, (error) => {
+        storage.get('storeLab', (error, data2) => {
+          $('#importLab').val(data2.lab);
+          setUploadFolder();
+        });
+      });
+    } else {
+      $('#importLab').val(data.lab);
+      setUploadFolder();
+    }
+  });
+}
+
+function setUploadFolder() {
+
   var importString = '';
 
-  //location
-  if (place == 'Buffalo') {
-    importString = '51';
-  }
+  var place = $('#importLab').val();
+
+  importString = place;
 
   now = new Date();
   start = new Date(now.getFullYear(), 0, 0);
@@ -227,10 +277,18 @@ function startUploadSubmit() {
   var inputFiles = [];
 
   var sampleIndex = $('input[name=sampleRadio]:checked').val();
-  for (i = 0; i < uploadFiles.length; i++) {
-    if (i == sampleIndex) {
-      inputFiles.unshift(uploadFiles[i]);
-    } else {
+  if (sampleIndex) {
+    console.log('sample', sampleIndex);
+    for (i = 0; i < uploadFiles.length; i++) {
+      if (i == sampleIndex) {
+        inputFiles.unshift(uploadFiles[i]);
+      } else {
+        inputFiles.push(uploadFiles[i]);      
+      }
+    }
+  } else {
+    console.log('no sample');
+    for (i = 0; i < uploadFiles.length; i++) {
       inputFiles.push(uploadFiles[i]);      
     }
   }
@@ -255,14 +313,22 @@ function startUploadSubmit() {
     //count = count.substr(count.length-3);
 
     var newName = 'img'+importStringSample+count+'.'+sourceName.split('.')[1];
+    var name1 = 'img'+importStringSample+count+'.jpg';
+    var name2 = 'img'+importStringSample+count+'.png';
     var newFileName = mainPath+'/'+importStringYear+'/'+newName;
+    var newFileName1 = mainPath+'/'+importStringYear+'/'+name1;
+    var newFileName2 = mainPath+'/'+importStringYear+'/'+name2;
 
-    while (fs.existsSync(newFileName)) {
+    while (fs.existsSync(newFileName1) || fs.existsSync(newFileName2)) {
       j++;
       count = "_" + Number(j+1);
       //count = count.substr(count.length-3);
       newName = 'img'+importStringSample+count+'.'+sourceName.split('.')[1];
+      name1 = 'img'+importStringSample+count+'.jpg';
+      name2 = 'img'+importStringSample+count+'.png';
       newFileName = mainPath+'/'+importStringYear+'/'+newName;
+      newFileName1 = mainPath+'/'+importStringYear+'/'+name1;
+      newFileName2 = mainPath+'/'+importStringYear+'/'+name2;
     }
 
     copyFile(inputFiles[i].path, newFileName);
@@ -273,41 +339,55 @@ function startUploadSubmit() {
   //make day dir in bussiness line if not exists
   if (!fs.existsSync(mainPath+'/'+importStringBussiness+'/'+importStringDay)) {
     fs.mkdir(mainPath+'/'+importStringBussiness+'/'+importStringDay, (err) => {
-      console.log('error',err);
+      if (err) {
+        console.log('error',err);
+      }
     })
   }  
 
   //make sample dir if not exists
   if (!fs.existsSync(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample)) {
     fs.mkdir(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample, (err) => {
-      console.log('error',err);
+      if (err) {
+        console.log('error',err);
+      }
     });
   }
 
   //make photos dir if not exists
   if (!fs.existsSync(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo')) {
     fs.mkdir(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo', (err) => {
-      console.log('error',err);
+      if (err) {
+        console.log('error',err);
+      }
     });
   }
   if (!fs.existsSync(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo')) {
     fs.mkdir(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo', (err) => {
-      console.log('error',err);
+      if (err) {
+        console.log('error',err);
+      }
     });
   }
   if (!fs.existsSync(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Additional_Doc')) {
     fs.mkdir(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Additional_Doc', (err) => {
-      console.log('error',err);
+      if (err) {
+        console.log('error',err);
+      }
     });
   }
   if (!fs.existsSync(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Failure_Photo')) {
     fs.mkdir(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Failure_Photo', (err) => {
-      console.log('error',err);
+      if (err) {
+        console.log('error',err);
+      }
     });
   }
   if (!fs.existsSync(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Result_Table_Doc')) {
     fs.mkdir(mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Result_Table_Doc', (err) => {
-      console.log('error',err);
+      if (err) {
+        console.log('error',err);
+      }
     });
   }
 
@@ -320,26 +400,47 @@ function startUploadSubmit() {
 
     var sourceName = inputFiles[i].name;
 
-    if (i == 0) {
+    if (sampleIndex && i == 0) {
       var newName = 'img'+importStringSample+count+'.'+sourceName.split('.')[1];
+      var name1 = 'img'+importStringSample+count+'.png';
+      var name2 = 'img'+importStringSample+count+'.jpg';
       var newFileName = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo/'+newName;
-      while (fs.existsSync(newFileName)) {
+      var fileName1 = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo/'+name1;
+      var fileName2 = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo/'+name2;
+      while (fs.existsSync(fileName1) || fs.existsSync(fileName2)) {
         j++;
         count = "0" + Number(j+1);
         count = count.substr(count.length-2);
         newName = 'img'+importStringSample+count+'.'+sourceName.split('.')[1];
+        name1 = 'img'+importStringSample+count+'.png';
+        name2 = 'img'+importStringSample+count+'.jpg';
         newFileName = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo/'+newName;
+        fileName1 = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo/'+name1;
+        fileName2 = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Sample_Photo/'+name2;
       }
       copyFile(inputFiles[i].path, newFileName);
     } else {
+      if (i == 0) { //upload woth no sample, start as 2 (initial index in exhibit)
+        j = 2;
+        count = "0" + j;
+        count = count.substr(count.length-2);
+      }
       var newName = 'img'+importStringSample+count+'_Labeling.'+sourceName.split('.')[1];
+      var name1 = 'img'+importStringSample+count+'_Labeling.png';
+      var name2 = 'img'+importStringSample+count+'_Labeling.jpg';
       var newFileName = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo/'+newName;
-      while (fs.existsSync(newFileName)) {
+      var fileName1 = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo/'+name1;
+      var fileName2 = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo/'+name2;
+      while (fs.existsSync(fileName1) || fs.existsSync(fileName2)) {
         j++;
         count = "0" + Number(j+1);
         count = count.substr(count.length-2);
         newName = 'img'+importStringSample+count+'_Labeling.'+sourceName.split('.')[1];
+        name1 = 'img'+importStringSample+count+'_Labeling.png';
+        name2 = 'img'+importStringSample+count+'_Labeling.jpg';
         newFileName = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo/'+newName;
+        fileName1 = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo/'+name1;
+        fileName2 = mainPath+'/'+importStringBussiness+'/'+importStringDay+'/'+importStringSample+'/Exhibit_Photo/'+name2;
       }
       copyFile(inputFiles[i].path, newFileName);
     }
@@ -357,7 +458,7 @@ function clearInputs() {
   $('#filesInput').val('');
   $('#filesTable').html('');
   $('#folderError').html('');
-  setUpload('Buffalo');
+  setUpload();
 }
 
 function clearRootInputs() {
@@ -370,34 +471,10 @@ function changeMainDirectory() {
   $('#pathInput').trigger('click');  
 }
 
-$('#pathInput').change(function() {
-  var filePath = $('#pathInput')[0].files[0].path;
-  $('#newRootPathLabel').html('New root directory: <b>'+filePath+'</b>');
-});
-
 //remote call the input
 function pressFiles() {
   $('#filesInput').trigger('click');
 }
-
-//has detected new files in the 
-$('#filesInput').change(function() {
-  var tableString = '';
-
-  var inputFiles = $('#filesInput')[0].files;
-
-  if (inputFiles.length > 0) {
-    tableString = '<thead><tr><td class="center">Selected file</td><td class="center">Sample</td></tr></thead><tbody>';
-  
-    for(i = 0; i < inputFiles.length; i++) {
-      tableString += '<tr><td>'+inputFiles[i].name+'</td><td class="center"><div class="form-check-inline"><label class="form-check-label"><input type="radio" class="form-check-input" name="sampleRadio" value="'+i+'"></label></div></td></tr>';
-    }
-
-    tableString += '</tbody>';
-  }
-    
-  $('#filesTable').html(tableString);
-});
 
 function confirmNewRoot() {
   if ($('#pathInput')[0].files.length > 0) {
@@ -461,7 +538,7 @@ function confirmNewRoot() {
     //initial call to load the main view
     readPath();
     //prepare upload form with buffalo data
-    setUpload('Buffalo');
+    setUpload();
 
     $('#pathConfirmModal').modal('hide');
   } else {
@@ -485,5 +562,7 @@ function copyFile(source, target) {
   });
 }
 
-//initial call to root directory
-getRoot();
+$(document).ready(function(){
+  //initial call to root directory
+  getRoot();  
+});

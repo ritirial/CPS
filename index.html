@@ -5,8 +5,17 @@
 
       <title>Application</title>
 
-      <link rel = "stylesheet" href = "./bower_components/bootstrap/dist/css/bootstrap.min.css" />
-      <link rel = "stylesheet" href = "./styles.css" />
+      <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css" />
+       
+      <!-- Bootstrap Optional JavaScript -->
+      <link rel = "stylesheet" href = "styles.css" />
+
+      <!--
+      <script src="./node_modules/jquery/dist/jquery.slim.min.js"></script>
+      <script src="./node_modules/popper.js/dist/umd/popper.min.js"></script>
+      <script src="./node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    -->
    </head>
    
    <body>
@@ -25,14 +34,11 @@
             <div class="footer__options">
                <button onclick="clearInputs()" type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#exampleModal">Upload pictures</button>
             </div>
-            <!--<div class="footer__address">
-               IP Address
-            </div>-->
          </div>
       </div>
 
       <div id="exampleModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">Upload pictures</h5>
@@ -42,14 +48,22 @@
             </div>
             <div class="modal-body">
               <label>Sample number of the day</label>
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <input type="number" placeholder="Day folder" class="form-control" id="importDate">
-                </div>
-                <div class="form-group col-md-6">
-                  <input type="number" placeholder="Sample number" class="form-control" id="importSample">
-                </div>
-              </div>
+              <form>
+                <div class="form-row">
+                  <div class="form-group col-xs-4">
+                    <select class="form-control" id="importLab">
+                      <option value="51">Buffalo (51)</option>
+                      <!--<option value="49">Puebla (49)</option>-->
+                    </select>
+                  </div>
+                  <div class="form-group col-xs-4">
+                    <input type="number" placeholder="Day folder" class="form-control" id="importDate">
+                  </div>
+                  <div class="form-group col-xs-4">
+                    <input type="number" placeholder="Sample number" class="form-control" id="importSample">
+                  </div>
+                </div>                
+              </form>
               <p id="folderError" class="text-danger text-small"></p>
 
               <br>
@@ -104,14 +118,6 @@
           </div>
         </div>
       </div>
-      
       <script src = "./view.js" ></script>
-      <script type="text/javascript" charset="utf-8">
-         /*
-         document.getElementById('drag').ondragstart = (event) => {
-            event.preventDefault()
-            ipcRenderer.send('ondragstart', '/path/to/item')
-         }*/
-      </script>
    </body>
 </html>
